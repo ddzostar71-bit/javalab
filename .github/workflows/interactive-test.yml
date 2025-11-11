@@ -87,6 +87,34 @@ jobs:
       run: |
         sed -i 's/db.password=root/db.password=root/g' src/main/resources/database.properties
 
+    - name: Валидация параметров ID
+      run: |
+        echo "==============================================="
+        echo "ПРОВЕРКА ДИАПАЗОНОВ ПАРАМЕТРОВ ID"
+        echo "==============================================="
+
+        SEARCH_ID=${{ github.event.inputs.search_id }}
+        DELETE_ID=${{ github.event.inputs.delete_id }}
+        MIN_ID=1
+        MAX_ID=100
+
+        echo "ID для поиска: $SEARCH_ID (допустимый диапазон: $MIN_ID-$MAX_ID)"
+        if [ "$SEARCH_ID" -lt "$MIN_ID" ] || [ "$SEARCH_ID" -gt "$MAX_ID" ]; then
+          echo "⚠️  ПРЕДУПРЕЖДЕНИЕ: ID для поиска ($SEARCH_ID) выходит за пределы рекомендуемого диапазона ($MIN_ID-$MAX_ID)!"
+        else
+          echo "✓ ID для поиска в допустимых пределах"
+        fi
+
+        echo ""
+        echo "ID для удаления: $DELETE_ID (допустимый диапазон: $MIN_ID-$MAX_ID)"
+        if [ "$DELETE_ID" -lt "$MIN_ID" ] || [ "$DELETE_ID" -gt "$MAX_ID" ]; then
+          echo "⚠️  ПРЕДУПРЕЖДЕНИЕ: ID для удаления ($DELETE_ID) выходит за пределы рекомендуемого диапазона ($MIN_ID-$MAX_ID)!"
+        else
+          echo "✓ ID для удаления в допустимых пределах"
+        fi
+        echo "==============================================="
+        echo ""
+
     - name: Настройка параметров тестирования
       run: |
         sed -i 's/Integer searchId = [0-9]*;/Integer searchId = ${{ github.event.inputs.search_id }};/g' src/main/java/by/bsuir/travel/Main.java

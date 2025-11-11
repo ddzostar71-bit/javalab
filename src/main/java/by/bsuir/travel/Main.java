@@ -87,23 +87,8 @@ public class Main {
         }
         System.out.println();
 
-        // 5. Тест метода delete(Travel tourist) - удаление туриста по объекту
-        System.out.println("5. ТЕСТ МЕТОДА delete(Travel tourist) - Удаление по объекту:");
-        System.out.println("-".repeat(80));
-        if (created && newTourist.getId() != null) {
-            System.out.println("Удаляем туриста: " + newTourist.getFirstName() + " " +
-                             newTourist.getLastName() + " (ID: " + newTourist.getId() + ")");
-            boolean deleted = travelDAO.delete(newTourist);
-            if (deleted) {
-                System.out.println("Турист успешно удален.");
-            } else {
-                System.out.println("Ошибка при удалении туриста.");
-            }
-        }
-        System.out.println();
-
-        // 6. Тест метода delete(int id) - удаление туриста по ID
-        System.out.println("6. ТЕСТ МЕТОДА delete(int id) - Удаление по ID:");
+        // 5. Тест метода delete(int id) - удаление туриста по ID
+        System.out.println("5. ТЕСТ МЕТОДА delete(int id) - Удаление по ID:");
         System.out.println("-".repeat(80));
         Integer deleteId = 3;
         // Проверим существование туриста перед удалением
@@ -122,8 +107,8 @@ public class Main {
         }
         System.out.println();
 
-        // 7. Финальный список всех туристов
-        System.out.println("7. ФИНАЛЬНЫЙ СПИСОК ВСЕХ ТУРИСТОВ:");
+        // 6. Финальный список всех туристов
+        System.out.println("6. ФИНАЛЬНЫЙ СПИСОК ВСЕХ ТУРИСТОВ:");
         System.out.println("-".repeat(80));
         List<Travel> finalList = travelDAO.findAll();
         if (finalList.isEmpty()) {
