@@ -105,24 +105,20 @@ public class Main {
         // 6. Тест метода delete(int id) - удаление туриста по ID
         System.out.println("6. ТЕСТ МЕТОДА delete(int id) - Удаление по ID:");
         System.out.println("-".repeat(80));
-        // Создадим еще одного туриста для удаления по ID
-        Travel tempTourist = new Travel();
-        tempTourist.setFirstName("Временный");
-        tempTourist.setLastName("Турист");
-        tempTourist.setEmail("temp.tourist@mail.ru");
-        tempTourist.setPhoneNumber("+375291234599");
-        tempTourist.setDestination("Берлин");
-        tempTourist.setDurationDays(3);
-        tempTourist.setPrice(500.00);
-
-        if (travelDAO.create(tempTourist)) {
-            System.out.println("Создан временный турист с ID: " + tempTourist.getId());
-            boolean deletedById = travelDAO.delete(tempTourist.getId());
+        Integer deleteId = 3;
+        // Проверим существование туриста перед удалением
+        Travel touristToDelete = travelDAO.findEntityById(deleteId);
+        if (touristToDelete != null) {
+            System.out.println("Найден турист для удаления (ID = " + deleteId + "):");
+            System.out.println(touristToDelete);
+            boolean deletedById = travelDAO.delete(deleteId);
             if (deletedById) {
-                System.out.println("Турист с ID " + tempTourist.getId() + " успешно удален.");
+                System.out.println("Турист с ID " + deleteId + " успешно удален.");
             } else {
                 System.out.println("Ошибка при удалении туриста по ID.");
             }
+        } else {
+            System.out.println("Турист с ID = " + deleteId + " не найден в базе данных.");
         }
         System.out.println();
 

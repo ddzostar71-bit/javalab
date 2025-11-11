@@ -21,6 +21,42 @@ on:
         default: 'Милан'
         type: string
 
+      create_first_name:
+        description: 'Имя нового туриста (метод create)'
+        required: true
+        default: 'Анна'
+        type: string
+
+      create_last_name:
+        description: 'Фамилия нового туриста (метод create)'
+        required: true
+        default: 'Васильева'
+        type: string
+
+      create_email:
+        description: 'Email нового туриста (метод create)'
+        required: true
+        default: 'anna.vasilyeva@mail.ru'
+        type: string
+
+      create_destination:
+        description: 'Направление для нового туриста (метод create)'
+        required: true
+        default: 'Венеция'
+        type: string
+
+      create_duration:
+        description: 'Длительность тура в днях (метод create)'
+        required: true
+        default: '8'
+        type: string
+
+      create_price:
+        description: 'Цена тура (метод create)'
+        required: true
+        default: '1900.00'
+        type: string
+
 jobs:
   test:
     name: Интерактивное тестирование проекта
@@ -58,11 +94,20 @@ jobs:
         # Обновляем ID для поиска туриста
         sed -i 's/Integer searchId = [0-9]*;/Integer searchId = ${{ github.event.inputs.search_id }};/g' src/main/java/by/bsuir/travel/Main.java
 
+        # Обновляем ID для удаления туриста
+        sed -i 's/Integer deleteId = [0-9]*;/Integer deleteId = ${{ github.event.inputs.delete_id }};/g' src/main/java/by/bsuir/travel/Main.java
+
         # Обновляем направление для update
         sed -i 's/newTourist.setDestination("Милан");/newTourist.setDestination("${{ github.event.inputs.update_destination }}");/g' src/main/java/by/bsuir/travel/Main.java
 
-        # Создаем временного туриста с заданным ID для удаления
-        # Для этого добавим прямую вставку в БД перед запуском программы
+        # Обновляем параметры создаваемого туриста (метод create)
+        sed -i 's/newTourist.setFirstName("Анна");/newTourist.setFirstName("${{ github.event.inputs.create_first_name }}");/g' src/main/java/by/bsuir/travel/Main.java
+        sed -i 's/newTourist.setLastName("Васильева");/newTourist.setLastName("${{ github.event.inputs.create_last_name }}");/g' src/main/java/by/bsuir/travel/Main.java
+        sed -i 's/newTourist.setEmail("anna.vasilyeva@mail.ru");/newTourist.setEmail("${{ github.event.inputs.create_email }}");/g' src/main/java/by/bsuir/travel/Main.java
+        sed -i 's/newTourist.setDestination("Венеция");/newTourist.setDestination("${{ github.event.inputs.create_destination }}");/g' src/main/java/by/bsuir/travel/Main.java
+        sed -i 's/newTourist.setDurationDays(8);/newTourist.setDurationDays(${{ github.event.inputs.create_duration }});/g' src/main/java/by/bsuir/travel/Main.java
+        sed -i 's/newTourist.setPrice(1900.00);/newTourist.setPrice(${{ github.event.inputs.create_price }});/g' src/main/java/by/bsuir/travel/Main.java
+
         echo "✅ Параметры тестирования настроены"
 
     - name: 🗄️ Подготовка данных для теста удаления
@@ -131,6 +176,12 @@ jobs:
         SEARCH_ID: ${{ github.event.inputs.search_id }}
         DELETE_ID: ${{ github.event.inputs.delete_id }}
         UPDATE_DEST: ${{ github.event.inputs.update_destination }}
+        CREATE_FIRST_NAME: ${{ github.event.inputs.create_first_name }}
+        CREATE_LAST_NAME: ${{ github.event.inputs.create_last_name }}
+        CREATE_EMAIL: ${{ github.event.inputs.create_email }}
+        CREATE_DESTINATION: ${{ github.event.inputs.create_destination }}
+        CREATE_DURATION: ${{ github.event.inputs.create_duration }}
+        CREATE_PRICE: ${{ github.event.inputs.create_price }}
       run: |
         cat > CONTROL_WORK_REPORT.txt << 'EOF'
         ================================================================================
@@ -189,6 +240,14 @@ jobs:
         ID для поиска туриста (findEntityById): ${SEARCH_ID}
         ID для удаления туриста (delete): ${DELETE_ID}
         Новое направление для обновления: ${UPDATE_DEST}
+
+        Параметры создаваемого туриста (create):
+          - Имя: ${CREATE_FIRST_NAME}
+          - Фамилия: ${CREATE_LAST_NAME}
+          - Email: ${CREATE_EMAIL}
+          - Направление: ${CREATE_DESTINATION}
+          - Длительность: ${CREATE_DURATION} дней
+          - Цена: ${CREATE_PRICE} руб.
 
         ================================================================================
                               ДЕМОНСТРАЦИЯ РАБОТЫ ПРОГРАММЫ
@@ -263,5 +322,12 @@ jobs:
         echo "📋 Использованные параметры:"
         echo "   - ID для поиска: ${{ github.event.inputs.search_id }}"
         echo "   - ID для удаления: ${{ github.event.inputs.delete_id }}"
-        echo "   - Новое направление: ${{ github.event.inputs.update_destination }}"
+        echo "   - Новое направление для update: ${{ github.event.inputs.update_destination }}"
+        echo "   - Новый турист (create):"
+        echo "     • Имя: ${{ github.event.inputs.create_first_name }}"
+        echo "     • Фамилия: ${{ github.event.inputs.create_last_name }}"
+        echo "     • Email: ${{ github.event.inputs.create_email }}"
+        echo "     • Направление: ${{ github.event.inputs.create_destination }}"
+        echo "     • Длительность: ${{ github.event.inputs.create_duration }} дней"
+        echo "     • Цена: ${{ github.event.inputs.create_price }} руб."
         echo ""
