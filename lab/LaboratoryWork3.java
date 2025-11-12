@@ -1,8 +1,21 @@
 import java.util.*;
 import java.util.regex.Pattern;
 
+/**
+ * Лабораторная работа 3: Продвинутое ООП
+ *
+ * Включает решения 5 задач на продвинутые концепции ООП:
+ * - Наследование классов и полиморфизм
+ * - Композиция объектов
+ * - Абстрактные классы
+ * - Интерфейсы
+ * - Пользовательские исключения
+ *
+ * @author Student
+ * @version 1.0
+ */
 public class LaboratoryWork3 {
-    private static Scanner scanner = new Scanner(System.in);
+    private static final Scanner scanner = new Scanner(System.in);
     
     public static void main(String[] args) {
         while (true) {
