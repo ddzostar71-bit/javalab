@@ -1,8 +1,20 @@
 import java.util.*;
-import java.util.stream.IntStream;
 
+/**
+ * Лабораторная работа 2: Объектно-ориентированное программирование
+ *
+ * Включает решения 6 задач на основы ООП:
+ * - Создание классов с конструкторами и методами
+ * - Перегрузка методов
+ * - Статические методы с переменным числом параметров
+ * - Работа с классами-обертками (Double)
+ * - Методы класса String
+ *
+ * @author Student
+ * @version 1.0
+ */
 public class LaboratoryWork2 {
-    private static Scanner scanner = new Scanner(System.in);
+    private static final Scanner scanner = new Scanner(System.in);
     
     public static void main(String[] args) {
         while (true) {
@@ -51,60 +63,102 @@ public class LaboratoryWork2 {
     }
     
     // ==================== ЗАДАНИЕ 1 - Класс Круг ====================
+    /**
+     * Класс представляющий круг с радиусом и координатами центра
+     */
     static class Circle {
         private double radius;
         private double centerX;
         private double centerY;
-        
-        // Конструкторы
+
+        /**
+         * Конструктор по умолчанию - создает круг с радиусом 1.0 в точке (0, 0)
+         */
         public Circle() {
             this.radius = 1.0;
             this.centerX = 0.0;
             this.centerY = 0.0;
         }
-        
+
+        /**
+         * Конструктор с одним параметром - радиус
+         * @param radius радиус круга
+         */
         public Circle(double radius) {
             this.radius = radius;
             this.centerX = 0.0;
             this.centerY = 0.0;
         }
-        
+
+        /**
+         * Конструктор с двумя параметрами - координаты центра
+         * @param centerX координата X центра
+         * @param centerY координата Y центра
+         */
         public Circle(double centerX, double centerY) {
             this.radius = 1.0;
             this.centerX = centerX;
             this.centerY = centerY;
         }
-        
+
+        /**
+         * Конструктор с тремя параметрами - все характеристики
+         * @param radius радиус круга
+         * @param centerX координата X центра
+         * @param centerY координата Y центра
+         */
         public Circle(double radius, double centerX, double centerY) {
             this.radius = radius;
             this.centerX = centerX;
             this.centerY = centerY;
         }
-        
-        // Методы
+
+        /**
+         * Выводит все характеристики круга
+         */
         public void printCharacteristics() {
-            System.out.printf("Круг: радиус=%.2f, центр=(%.2f, %.2f)%n", 
+            System.out.printf("Круг: радиус=%.2f, центр=(%.2f, %.2f)%n",
                             radius, centerX, centerY);
         }
-        
+
+        /**
+         * Изменяет координаты центра круга на заданную дельту
+         * @param deltaX изменение координаты X
+         * @param deltaY изменение координаты Y
+         */
         public void moveCenter(double deltaX, double deltaY) {
             this.centerX += deltaX;
             this.centerY += deltaY;
         }
-        
+
+        /**
+         * Устанавливает новый радиус круга
+         * @param radius новый радиус
+         */
         public void setRadius(double radius) {
             this.radius = radius;
         }
-        
+
+        /**
+         * Вычисляет площадь круга
+         * @return площадь круга
+         */
         public double getArea() {
             return Math.PI * radius * radius;
         }
-        
+
+        /**
+         * Вычисляет длину окружности
+         * @return длина окружности
+         */
         public double getCircumference() {
             return 2 * Math.PI * radius;
         }
     }
-    
+
+    /**
+     * Задание 1: Демонстрация работы с классом Circle
+     */
     private static void task1() {
         System.out.println("\n=== Задание 1: Класс 'Круг' ===");
         
@@ -130,6 +184,10 @@ public class LaboratoryWork2 {
     }
     
     // ==================== ЗАДАНИЕ 2 - Класс Склад ====================
+    /**
+     * Класс представляющий склад с товарами
+     * Хранит количество товара и стоимость единицы
+     */
     static class Warehouse {
         private int quantity;
         private double pricePerUnit;
@@ -205,6 +263,9 @@ public class LaboratoryWork2 {
     }
     
     // ==================== ЗАДАНИЕ 3 - Класс Книга ====================
+    /**
+     * Класс представляющий книгу с информацией об авторе, названии, годе издания и количестве страниц
+     */
     static class Book {
         private String author;
         private String title;
@@ -304,6 +365,10 @@ public class LaboratoryWork2 {
     }
     
     // ==================== ЗАДАНИЕ 4 - Класс Дробь ====================
+    /**
+     * Класс представляющий математическую дробь (числитель/знаменатель)
+     * Поддерживает арифметические операции и автоматическое сокращение
+     */
     static class Fraction {
         private int numerator;
         private int denominator;

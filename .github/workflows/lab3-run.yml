@@ -1,0 +1,121 @@
+name: Laboratory Work 3 - Run
+
+on:
+  workflow_dispatch:
+    inputs:
+      task_number:
+        description: 'Номер задания (1-5) или 0 для выхода'
+        required: true
+        default: '1'
+        type: choice
+        options:
+          - '1'
+          - '2'
+          - '3'
+          - '4'
+          - '5'
+      login:
+        description: 'Логин (для задания 5)'
+        required: false
+        default: 'user_123'
+      password:
+        description: 'Пароль (для задания 5)'
+        required: false
+        default: 'password_123'
+      confirm_password:
+        description: 'Подтверждение пароля (для задания 5)'
+        required: false
+        default: 'password_123'
+
+jobs:
+  run-lab3:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout код
+        uses: actions/checkout@v4
+
+      - name: Установка Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Компиляция программы
+        run: |
+          cd lab
+          javac LaboratoryWork3.java
+          echo "✅ Компиляция успешно завершена"
+
+      - name: Подготовка входных данных
+        id: prepare_input
+        run: |
+          TASK=${{ github.event.inputs.task_number }}
+
+          # Формируем входные данные в зависимости от задания
+          case $TASK in
+            1|2|3|4)
+              # Задания без ввода
+              echo "$TASK" > input.txt
+              echo "0" >> input.txt
+              ;;
+            5)
+              # Задание 5: Пользовательские исключения
+              echo "$TASK" > input.txt
+              echo "${{ github.event.inputs.login }}" >> input.txt
+              echo "${{ github.event.inputs.password }}" >> input.txt
+              echo "${{ github.event.inputs.confirm_password }}" >> input.txt
+              echo "0" >> input.txt
+              ;;
+          esac
+
+      - name: Запуск программы
+        run: |
+          cd lab
+          echo "🚀 Запуск задания ${{ github.event.inputs.task_number }}..."
+          echo "================================================"
+          java LaboratoryWork3 < ../input.txt || true
+          echo "================================================"
+          echo "✅ Выполнение завершено"
+
+      - name: Информация о задании
+        run: |
+          TASK=${{ github.event.inputs.task_number }}
+          echo "📋 Информация о задании $TASK:"
+          case $TASK in
+            1)
+              echo "Наследование - Student и Magistracy"
+              echo "Демонстрация полиморфизма и переопределения методов"
+              ;;
+            2)
+              echo "Композиция - Car, Lorry, SportCar"
+              echo "Демонстрация композиции объектов и наследования"
+              ;;
+            3)
+              echo "Абстрактные классы - Фрукты"
+              echo "Работа с абстрактными классами и подсчет стоимости"
+              ;;
+            4)
+              echo "Интерфейсы - Printable"
+              echo "Использование интерфейсов и instanceof"
+              ;;
+            5)
+              echo "Пользовательские исключения"
+              echo "Валидация данных с обработкой исключений"
+              echo ""
+              echo "🔐 Данные для валидации:"
+              echo "  Логин: ${{ github.event.inputs.login }}"
+              echo "  Пароль: ${{ github.event.inputs.password }}"
+              echo "  Подтверждение: ${{ github.event.inputs.confirm_password }}"
+              ;;
+          esac
+
+      - name: Проверка документации
+        run: |
+          if [ -f "lab/LAB3.md" ]; then
+            echo "✅ Документация найдена"
+            echo "📄 Содержание LAB3.md:"
+            head -n 20 lab/LAB3.md
+          else
+            echo "⚠️  Документация не найдена"
+          fi

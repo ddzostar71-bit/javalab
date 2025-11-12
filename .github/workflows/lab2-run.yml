@@ -1,0 +1,112 @@
+name: Laboratory Work 2 - Run
+
+on:
+  workflow_dispatch:
+    inputs:
+      task_number:
+        description: 'Номер задания (1-6) или 0 для выхода'
+        required: true
+        default: '1'
+        type: choice
+        options:
+          - '1'
+          - '2'
+          - '3'
+          - '4'
+          - '5'
+          - '6'
+      author:
+        description: 'Автор книги (для задания 3)'
+        required: false
+        default: 'Пушкин'
+      title:
+        description: 'Название книги (для задания 3)'
+        required: false
+        default: 'Евгений Онегин'
+      year:
+        description: 'Год издания (для задания 3)'
+        required: false
+        default: '1833'
+      pages:
+        description: 'Количество страниц (для задания 3)'
+        required: false
+        default: '480'
+
+jobs:
+  run-lab2:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout код
+        uses: actions/checkout@v4
+
+      - name: Установка Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Компиляция программы
+        run: |
+          cd lab
+          javac LaboratoryWork2.java
+          echo "✅ Компиляция успешно завершена"
+
+      - name: Подготовка входных данных
+        id: prepare_input
+        run: |
+          TASK=${{ github.event.inputs.task_number }}
+
+          # Формируем входные данные в зависимости от задания
+          case $TASK in
+            1|2|4|5)
+              # Задания без ввода
+              echo "$TASK" > input.txt
+              echo "0" >> input.txt
+              ;;
+            3)
+              # Задание 3: Класс Книга (с вводом данных)
+              echo "$TASK" > input.txt
+              echo "${{ github.event.inputs.author }}" >> input.txt
+              echo "${{ github.event.inputs.title }}" >> input.txt
+              echo "${{ github.event.inputs.year }}" >> input.txt
+              echo "${{ github.event.inputs.pages }}" >> input.txt
+              echo "0" >> input.txt
+              ;;
+            6)
+              # Задание 6: Работа со строками
+              echo "$TASK" > input.txt
+              echo "0" >> input.txt
+              ;;
+          esac
+
+      - name: Запуск программы
+        run: |
+          cd lab
+          echo "🚀 Запуск задания ${{ github.event.inputs.task_number }}..."
+          echo "================================================"
+          java LaboratoryWork2 < ../input.txt || true
+          echo "================================================"
+          echo "✅ Выполнение завершено"
+
+      - name: Информация о задании
+        run: |
+          TASK=${{ github.event.inputs.task_number }}
+          echo "📋 Информация о задании $TASK:"
+          case $TASK in
+            1) echo "Класс 'Круг' - работа с геометрическими объектами";;
+            2) echo "Класс 'Склад' - управление товарами на складе";;
+            3) echo "Класс 'Книга' - работа с информацией о книгах";;
+            4) echo "Класс 'Дробь' - математические операции с дробями";;
+            5) echo "Работа с классом Double - методы класса-обертки";;
+            6) echo "Методы работы со строками - демонстрация String API";;
+          esac
+
+          if [ "$TASK" = "3" ]; then
+            echo ""
+            echo "📚 Используемые данные:"
+            echo "  Автор: ${{ github.event.inputs.author }}"
+            echo "  Название: ${{ github.event.inputs.title }}"
+            echo "  Год: ${{ github.event.inputs.year }}"
+            echo "  Страниц: ${{ github.event.inputs.pages }}"
+          fi
