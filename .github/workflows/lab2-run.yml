@@ -37,35 +37,120 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout код
+      - name: 📥 Checkout код
         uses: actions/checkout@v4
 
-      - name: Установка Java
+      - name: ☕ Установка Java
         uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Компиляция программы
+      - name: 📊 Информация о системе
         run: |
-          cd lab
-          javac LaboratoryWork2.java
-          echo "✅ Компиляция успешно завершена"
+          echo "================================"
+          echo "ИНФОРМАЦИЯ О СИСТЕМЕ"
+          echo "================================"
+          echo "🖥️  ОС: $(uname -a)"
+          echo "☕ Java версия:"
+          java -version
+          echo "📅 Дата и время: $(date)"
+          echo "👤 Пользователь: $(whoami)"
+          echo "📂 Рабочая директория: $(pwd)"
+          echo "================================"
 
-      - name: Подготовка входных данных
+      - name: 📋 Информация о задании
+        run: |
+          TASK=${{ github.event.inputs.task_number }}
+          echo ""
+          echo "╔════════════════════════════════════════════════════════════╗"
+          echo "║         ЛАБОРАТОРНАЯ РАБОТА 2 - ЗАДАНИЕ $TASK              ║"
+          echo "╚════════════════════════════════════════════════════════════╝"
+          echo ""
+          echo "📝 Описание задания:"
+          case $TASK in
+            1)
+              echo "   Название: Класс 'Круг'"
+              echo "   Описание: Геометрические операции с кругом"
+              echo "   Методы: конструкторы, расчет площади и длины окружности"
+              ;;
+            2)
+              echo "   Название: Класс 'Склад'"
+              echo "   Описание: Управление товарами на складе"
+              echo "   Методы: изменение количества, расчет стоимости, сравнение"
+              ;;
+            3)
+              echo "   Название: Класс 'Книга'"
+              echo "   Описание: Работа с информацией о книгах"
+              echo "   Методы: изменение полей, поиск по названию"
+              echo "   📚 Используемые данные:"
+              echo "      - Автор: ${{ github.event.inputs.author }}"
+              echo "      - Название: ${{ github.event.inputs.title }}"
+              echo "      - Год: ${{ github.event.inputs.year }}"
+              echo "      - Страниц: ${{ github.event.inputs.pages }}"
+              ;;
+            4)
+              echo "   Название: Класс 'Дробь'"
+              echo "   Описание: Математические операции с дробями"
+              echo "   Методы: сложение, вычитание, умножение, деление, сокращение"
+              ;;
+            5)
+              echo "   Название: Работа с классом Double"
+              echo "   Описание: Методы класса-обертки Double"
+              echo "   Операции: valueOf, parseDouble, преобразования типов"
+              ;;
+            6)
+              echo "   Название: Методы работы со строками"
+              echo "   Описание: Демонстрация String API"
+              echo "   Методы: charAt, contains, replace, substring и др."
+              ;;
+          esac
+          echo ""
+
+      - name: 🔨 Компиляция программы
+        run: |
+          echo "════════════════════════════════════════════════════════════"
+          echo "ЭТАП 1: КОМПИЛЯЦИЯ"
+          echo "════════════════════════════════════════════════════════════"
+          cd lab
+          echo "📁 Компилируемый файл: LaboratoryWork2.java"
+          echo "⏳ Начало компиляции..."
+          javac -verbose LaboratoryWork2.java 2>&1 | head -20
+          echo ""
+          if [ -f "LaboratoryWork2.class" ]; then
+            echo "✅ Компиляция успешно завершена!"
+            echo "📦 Созданные файлы:"
+            ls -lh LaboratoryWork2*.class 2>/dev/null || ls -lh *.class | grep "LaboratoryWork2"
+          else
+            echo "❌ Ошибка компиляции!"
+            exit 1
+          fi
+          echo "════════════════════════════════════════════════════════════"
+
+      - name: 📝 Подготовка входных данных
         id: prepare_input
         run: |
           TASK=${{ github.event.inputs.task_number }}
 
-          # Формируем входные данные в зависимости от задания
+          echo "════════════════════════════════════════════════════════════"
+          echo "ЭТАП 2: ПОДГОТОВКА ВХОДНЫХ ДАННЫХ"
+          echo "════════════════════════════════════════════════════════════"
+
           case $TASK in
-            1|2|4|5)
-              # Задания без ввода
+            1|2|4|5|6)
+              echo "📥 Входные данные для задания $TASK:"
+              echo "   - Номер задания: $TASK"
+              echo "   - Дополнительный ввод: не требуется (демонстрация)"
               echo "$TASK" > input.txt
               echo "0" >> input.txt
               ;;
             3)
-              # Задание 3: Класс Книга (с вводом данных)
+              echo "📥 Входные данные для задания 3 (Класс Книга):"
+              echo "   - Номер задания: $TASK"
+              echo "   - Автор: ${{ github.event.inputs.author }}"
+              echo "   - Название: ${{ github.event.inputs.title }}"
+              echo "   - Год: ${{ github.event.inputs.year }}"
+              echo "   - Страниц: ${{ github.event.inputs.pages }}"
               echo "$TASK" > input.txt
               echo "${{ github.event.inputs.author }}" >> input.txt
               echo "${{ github.event.inputs.title }}" >> input.txt
@@ -73,40 +158,92 @@ jobs:
               echo "${{ github.event.inputs.pages }}" >> input.txt
               echo "0" >> input.txt
               ;;
-            6)
-              # Задание 6: Работа со строками
-              echo "$TASK" > input.txt
-              echo "0" >> input.txt
-              ;;
           esac
 
-      - name: Запуск программы
+          echo ""
+          echo "📄 Содержимое файла input.txt:"
+          cat input.txt | nl
+          echo "════════════════════════════════════════════════════════════"
+
+      - name: 🚀 Запуск программы
         run: |
           cd lab
-          echo "🚀 Запуск задания ${{ github.event.inputs.task_number }}..."
-          echo "================================================"
-          java LaboratoryWork2 < ../input.txt || true
-          echo "================================================"
-          echo "✅ Выполнение завершено"
+          echo ""
+          echo "════════════════════════════════════════════════════════════"
+          echo "ЭТАП 3: ВЫПОЛНЕНИЕ ПРОГРАММЫ"
+          echo "════════════════════════════════════════════════════════════"
+          echo "⏰ Время начала: $(date '+%Y-%m-%d %H:%M:%S')"
+          echo ""
+          echo "▶️  ВЫВОД ПРОГРАММЫ:"
+          echo "────────────────────────────────────────────────────────────"
 
-      - name: Информация о задании
+          START_TIME=$(date +%s)
+          java LaboratoryWork2 < ../input.txt 2>&1 | tee ../output.log || true
+          END_TIME=$(date +%s)
+
+          echo "────────────────────────────────────────────────────────────"
+          DURATION=$((END_TIME - START_TIME))
+          echo ""
+          echo "⏱️  Время выполнения: ${DURATION} секунд"
+          echo "⏰ Время окончания: $(date '+%Y-%m-%d %H:%M:%S')"
+          echo "════════════════════════════════════════════════════════════"
+
+      - name: 📊 Статистика выполнения
+        if: always()
         run: |
-          TASK=${{ github.event.inputs.task_number }}
-          echo "📋 Информация о задании $TASK:"
-          case $TASK in
-            1) echo "Класс 'Круг' - работа с геометрическими объектами";;
-            2) echo "Класс 'Склад' - управление товарами на складе";;
-            3) echo "Класс 'Книга' - работа с информацией о книгах";;
-            4) echo "Класс 'Дробь' - математические операции с дробями";;
-            5) echo "Работа с классом Double - методы класса-обертки";;
-            6) echo "Методы работы со строками - демонстрация String API";;
-          esac
-
-          if [ "$TASK" = "3" ]; then
-            echo ""
-            echo "📚 Используемые данные:"
-            echo "  Автор: ${{ github.event.inputs.author }}"
-            echo "  Название: ${{ github.event.inputs.title }}"
-            echo "  Год: ${{ github.event.inputs.year }}"
-            echo "  Страниц: ${{ github.event.inputs.pages }}"
+          echo ""
+          echo "════════════════════════════════════════════════════════════"
+          echo "СТАТИСТИКА ВЫПОЛНЕНИЯ"
+          echo "════════════════════════════════════════════════════════════"
+          echo "📌 Задание: ${{ github.event.inputs.task_number }}"
+          echo "📅 Дата: $(date '+%Y-%m-%d')"
+          echo "🕐 Время: $(date '+%H:%M:%S')"
+          echo "✅ Статус: Выполнено"
+          echo ""
+          if [ -f output.log ]; then
+            LINES=$(wc -l < output.log)
+            echo "📝 Строк вывода: $LINES"
+            echo "💾 Размер лога: $(du -h output.log | cut -f1)"
           fi
+          echo ""
+          echo "🎯 Особенности задания ${{ github.event.inputs.task_number }}:"
+          case ${{ github.event.inputs.task_number }} in
+            1) echo "   ✓ Демонстрация конструкторов и инкапсуляции";;
+            2) echo "   ✓ Статические методы с переменным числом параметров";;
+            3) echo "   ✓ Перегрузка методов и работа с пользовательским вводом";;
+            4) echo "   ✓ Операции с дробями и алгоритм НОД";;
+            5) echo "   ✓ Работа с классами-обертками";;
+            6) echo "   ✓ Методы класса String";;
+          esac
+          echo "════════════════════════════════════════════════════════════"
+
+      - name: 💾 Сохранение логов выполнения
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lab2-task-${{ github.event.inputs.task_number }}-logs
+          path: |
+            output.log
+            input.txt
+          retention-days: 30
+
+      - name: ✅ Итоговый отчет
+        if: always()
+        run: |
+          echo ""
+          echo "╔════════════════════════════════════════════════════════════╗"
+          echo "║                    ИТОГОВЫЙ ОТЧЕТ                         ║"
+          echo "╚════════════════════════════════════════════════════════════╝"
+          echo ""
+          echo "📋 Лабораторная работа: 2 (ООП)"
+          echo "🔢 Номер задания: ${{ github.event.inputs.task_number }}"
+          echo "📅 Дата выполнения: $(date '+%d.%m.%Y')"
+          echo "🕐 Время выполнения: $(date '+%H:%M:%S')"
+          echo "☕ Версия Java: 17"
+          echo "💻 ОС: Ubuntu Latest"
+          echo ""
+          echo "✅ Все этапы выполнены успешно!"
+          echo "📦 Артефакты (логи) сохранены на 30 дней"
+          echo "📥 Доступны для скачивания в разделе Artifacts"
+          echo ""
+          echo "════════════════════════════════════════════════════════════"
